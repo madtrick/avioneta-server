@@ -3,14 +3,11 @@
 
 -behaviour(supervisor).
 
-%% API
 -export([start_link/0]).
 
-%% Supervisor callbacks
 -export([init/1]).
 
-%% Helper macro for declaring children of supervisor
--define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
+-define(CHILD(I, Type, Options), {I, {I, start_link, Options}, permanent, 5000, Type, [I]}).
 
 %% ===================================================================
 %% API functions
@@ -24,5 +21,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+  {ok, { {one_for_one, 5, 10}, [
+        ?CHILD(wsserver, worker, [[{port, 8080}, {worker_options, [{handler, avioneta_handler}]}]]),
+        ?CHILD(avioneta_registry, worker, [])
+      ]} }.
 
