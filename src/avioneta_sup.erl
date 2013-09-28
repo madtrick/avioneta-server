@@ -23,6 +23,8 @@ start_link() ->
 init([]) ->
   {ok, { {one_for_one, 5, 10}, [
         ?CHILD(wsserver, worker, [[{port, 8080}, {worker_options, [{handler, avioneta_handler}]}]]),
-        ?CHILD(avioneta_registry, worker, [])
+        ?CHILD(avioneta_registry, worker, []),
+        ?CHILD(avioneta_multicast, worker, []),
+        ?CHILD(avioneta_core, worker, [])
       ]} }.
 

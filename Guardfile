@@ -1,4 +1,4 @@
 guard 'eunit' do
-  watch(%r{tests/.+\.erl})
+  watch(%r{test/.+\.erl})
   watch(%r{src/.+\.erl})
 end
