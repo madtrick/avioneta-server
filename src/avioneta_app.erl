@@ -1,5 +1,4 @@
 -module(avioneta_app).
-
 -behaviour(application).
 
 %% Application callbacks
@@ -10,7 +9,11 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    avioneta_sup:start_link().
+  init_random_seed(),
+  avioneta_sup:start_link().
 
 stop(_State) ->
-    ok.
+  ok.
+
+init_random_seed() ->
+  random:seed(erlang:now()).

@@ -14,8 +14,13 @@ init(_) ->
   {ok, undefined}.
 
 handle_cast({publish, Data, Channels}, State) ->
-  publish_data_to_channels(Data, Channels),
+  publish_data(Data, Channels),
   {noreply, State}.
+
+publish_data(Data, To) when is_pid(To) ->
+  publish_data_to_channel(Data, To);
+publish_data(Data, To) ->
+  publish_data_to_channels(Data, To).
 
 publish_data_to_channels(Data, []) ->
   published;
