@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 -export([start_link/1]).
--export([add_player/2, players/1]).
+-export([add_player/2, get_player/2, players/1]).
 -export([init/1, handle_call/3, handle_info/2]).
 
 -define(PLAYER_DOWN(Pid), {'DOWN', _, process, Pid, _}).
@@ -12,6 +12,9 @@ start_link(AvionetaGameContextData) ->
 
 add_player(ArenaComponent, Data) ->
   gen_server:call(ArenaComponent, {add_player, Data}).
+
+get_player(ArenaComponent, Data) ->
+  gen_server:call(ArenaComponent, {get_player, Data}).
 
 players(ArenaComponent) ->
   gen_server:call(ArenaComponent, players).
@@ -38,6 +41,11 @@ handle_call({add_player, Data}, _, ArenaComponentData) ->
   Players               = avioneta_arena_component_data:players(ArenaComponentData),
   NewArenaComponentData = avioneta_arena_component_data:update(ArenaComponentData, [{players, [Player | Players]}]),
   {reply, Player, NewArenaComponentData};
+
+handle_call({get_player, Data}, _, ArenaComponentData) ->
+  PlayerId = Data,
+  [Player] = [Player || Player <- avioneta_arena_component_data:players(ArenaComponentData), avioneta_player_component:id(Player) =:= PlayerId],
+  {reply, Player, ArenaComponentData};
 
 handle_call(players, _, ArenaComponentData) ->
   {reply, avioneta_arena_component_data:players(ArenaComponentData), ArenaComponentData}.

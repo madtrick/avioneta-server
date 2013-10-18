@@ -2,8 +2,8 @@
 -behaviour(gen_server).
 
 -export([start_link/2]).
--export([init/1, handle_call/3, handle_info/2, terminate/2]).
--export([id/1, x/1, y/1]).
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
+-export([id/1, x/1, y/1, move/2]).
 
 -define(PROCESS_EXIT(Pid), {'EXIT', Pid, _}).
 
@@ -19,6 +19,9 @@ x(PlayerComponent) ->
 y(PlayerComponent) ->
   gen_server:call(PlayerComponent, y).
 
+move(PlayerComponent, Data) ->
+  gen_server:cast(PlayerComponent, {move, Data}).
+
 init([AvionetaGameContextData, PlayerData]) ->
   PlayerComponentData = avioneta_player_component_data:new(
     [{avioneta_game_context_data, AvionetaGameContextData} | PlayerData]
@@ -29,6 +32,10 @@ init([AvionetaGameContextData, PlayerData]) ->
 handle_info(?PROCESS_EXIT(Pid), PlayerComponentData) ->
   react_to_process_exit(PlayerComponentData, Pid).
 
+handle_cast({move, Data}, PlayerComponentData) ->
+  [{axis, Axis}, {value, Value}] = Data,
+  {noreply, move(Axis, Value, PlayerComponentData)}.
+
 handle_call(id, _, PlayerComponentData) ->
   {reply, avioneta_player_component_data:id(PlayerComponentData), PlayerComponentData};
 handle_call(x, _, PlayerComponentData) ->
@@ -38,6 +45,18 @@ handle_call(y, _, PlayerComponentData) ->
 
 terminate(Repos, PlayerComponentData) ->
   die.
+
+move(<<"x">>, Value, PlayerComponentData) ->
+  avioneta_player_component_data:update(
+    PlayerComponentData,
+    [{x, Value + avioneta_player_component_data:x(PlayerComponentData)}]
+  );
+
+move(<<"y">>, Value, PlayerComponentData) ->
+  avioneta_player_component_data:update(
+    PlayerComponentData,
+    [{y, Value + avioneta_player_component_data:y(PlayerComponentData)}]
+  ).
 
 link_with_origin(PlayerComponentData) ->
   erlang:process_flag(trap_exit, true),
