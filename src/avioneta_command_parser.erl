@@ -27,5 +27,6 @@ build_command(?COMMAND("RegisterPlayerCommand", Data)) ->
 build_command(?COMMAND("MovePlayerCommand", Data)) ->
   avioneta_command_context_data:new(avioneta_move_player_context, avioneta_move_player_command:fromJSON(Data));
 build_command(?COMMAND("ShootPlayerCommand", Data)) ->
-  avioneta_command_context_data:new(avioneta_shoot_player_context, avioneta_shoot_player_command:fromJSON(Data)).
-
+  avioneta_command_context_data:new(avioneta_shoot_player_context, avioneta_shoot_player_command:fromJSON(Data));
+build_command(?COMMAND("DestroyPlayerCommand", Data)) ->
+  avioneta_command_context_data:new(avioneta_destroy_player_context, avioneta_destroy_player_command:fromJSON(Data)).

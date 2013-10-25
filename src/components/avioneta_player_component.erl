@@ -3,9 +3,9 @@
 
 -export([start_link/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
--export([id/1, x/1, y/1, move/2]).
+-export([id/1, x/1, y/1, move/2, destroy/1]).
 
--define(PROCESS_EXIT(Pid), {'EXIT', Pid, _}).
+-define(PROCESS_DOWN(Pid), {'DOWN', _MonitorRef, process, Pid, _}).
 
 start_link(AvionetaGameContextData, PlayerData) ->
   gen_server:start_link(?MODULE, [AvionetaGameContextData, PlayerData], []).
@@ -22,16 +22,21 @@ y(PlayerComponent) ->
 move(PlayerComponent, Data) ->
   gen_server:cast(PlayerComponent, {move, Data}).
 
+destroy(PlayerComponent) ->
+  gen_server:cast(PlayerComponent, destroy).
+
 init([AvionetaGameContextData, PlayerData]) ->
   PlayerComponentData = avioneta_player_component_data:new(
     [{avioneta_game_context_data, AvionetaGameContextData} | PlayerData]
   ),
-  link_with_origin(PlayerComponentData),
+  monitor_origin(PlayerComponentData),
   {ok, PlayerComponentData}.
 
-handle_info(?PROCESS_EXIT(Pid), PlayerComponentData) ->
-  react_to_process_exit(PlayerComponentData, Pid).
+handle_info(?PROCESS_DOWN(Pid), PlayerComponentData) ->
+  react_to_process_down(PlayerComponentData, Pid).
 
+handle_cast(destroy, PlayerComponentData) ->
+  {stop, destroyed, PlayerComponentData};
 handle_cast({move, Data}, PlayerComponentData) ->
   [{axis, Axis}, {value, Value}] = Data,
   {noreply, move(Axis, Value, PlayerComponentData)}.
@@ -49,26 +54,25 @@ terminate(Repos, PlayerComponentData) ->
 move(<<"x">>, Value, PlayerComponentData) ->
   avioneta_player_component_data:update(
     PlayerComponentData,
-    [{x, Value + avioneta_player_component_data:x(PlayerComponentData)}]
+    [{x, Value}]
   );
 
 move(<<"y">>, Value, PlayerComponentData) ->
   avioneta_player_component_data:update(
     PlayerComponentData,
-    [{y, Value + avioneta_player_component_data:y(PlayerComponentData)}]
+    [{y, Value}]
   ).
 
-link_with_origin(PlayerComponentData) ->
-  erlang:process_flag(trap_exit, true),
-  erlang:link(avioneta_player_component_data:origin(PlayerComponentData)).
+monitor_origin(PlayerComponentData) ->
+  erlang:monitor(process, avioneta_player_component_data:origin(PlayerComponentData)).
 
-react_to_process_exit(PlayerComponentData, Pid) ->
-  react_to_process_exit_if_origin(PlayerComponentData, avioneta_player_component_data:origin(PlayerComponentData), Pid).
+react_to_process_down(PlayerComponentData, Pid) ->
+  react_to_process_down_if_origin(PlayerComponentData, avioneta_player_component_data:origin(PlayerComponentData), Pid).
 
-react_to_process_exit_if_origin(PlayerComponentData, Origin, Pid) when Origin =:= Pid ->
+react_to_process_down_if_origin(PlayerComponentData, Origin, Pid) when Origin =:= Pid ->
   avioneta_event_bus:trigger(avioneta_event_bus(PlayerComponentData), <<"player.disconnected">>, [[{id, avioneta_player_component_data:id(PlayerComponentData)}]]),
-  {stop, origin_exit, PlayerComponentData};
-react_to_process_exit_if_origin(PlayerComponentData, _, _) ->
+  {stop, origin_down, PlayerComponentData};
+react_to_process_down_if_origin(PlayerComponentData, _, _) ->
   {noreply, PlayerComponentData}.
 
 avioneta_event_bus(PlayerComponentData) ->
