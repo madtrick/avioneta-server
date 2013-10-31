@@ -4,6 +4,10 @@
 
 -define(COMMAND(CommandType, Data), {[{<<"type">>, <<CommandType>>}, {<<"data">>, Data}]}).
 
+parse(<<"">>) ->
+  [];
+parse([]) ->
+  [];
 parse(Data) ->
   JSON = jiffy:decode(Data),
   extract_commands_from_json(JSON).
