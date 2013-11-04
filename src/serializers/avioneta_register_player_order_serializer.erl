@@ -9,7 +9,9 @@ toJSON(RegisterPlayerOrderData) ->
           {data, {[
                 {id, avioneta_player_component:id(PlayerComponent)},
                 {x, avioneta_player_component:x(PlayerComponent)},
-                {y, avioneta_player_component:y(PlayerComponent)}
+                {y, avioneta_player_component:y(PlayerComponent)},
+                {color, avioneta_player_component:color(PlayerComponent)},
+                {remote, avioneta_register_player_order_data:remote(RegisterPlayerOrderData)}
               ]}
           }
         ]},

@@ -2,16 +2,21 @@
 -behaviour(gen_server).
 
 -export([start_link/1]).
--export([add_player/2, get_player/2, players/1]).
+-export([get_player/2, players/1, positions_left/1, create_player/2]).
 -export([init/1, handle_call/3, handle_info/2]).
 
 -define(PLAYER_DOWN(Pid), {'DOWN', _, process, Pid, _}).
+-define(MAX_POSITIONS, 3).
+-define(COLORS, [<<"red">>, <<"blue">>, <<"green">>]).
 
 start_link(AvionetaGameContextData) ->
   gen_server:start_link(?MODULE, [AvionetaGameContextData], []).
 
-add_player(ArenaComponent, Data) ->
-  gen_server:call(ArenaComponent, {add_player, Data}).
+positions_left(ArenaComponent) ->
+  gen_server:call(ArenaComponent, positions_left).
+
+create_player(ArenaComponent, Data) ->
+  gen_server:call(ArenaComponent, {create_player, Data}).
 
 get_player(ArenaComponent, Data) ->
   gen_server:call(ArenaComponent, {get_player, Data}).
@@ -31,12 +36,17 @@ handle_info(?PLAYER_DOWN(Pid), ArenaComponentData) ->
   NewArenaComponentData = avioneta_arena_component_data:update(ArenaComponentData, [{players, NewPlayers}]),
   {noreply, NewArenaComponentData}.
 
-handle_call({add_player, Data}, _, ArenaComponentData) ->
+handle_call({create_player, Data}, _, ArenaComponentData) ->
+  Color       = pick_player_color(ArenaComponentData),
+  Id          = pick_player_id(ArenaComponentData),
+  {x, X, y, Y} = pick_player_coordinates(ArenaComponentData),
+
   {ok, Player}                = avioneta_player_component_sup:add_player(
     avioneta_arena_component_data:avioneta_player_component_sup(ArenaComponentData),
     avioneta_arena_component_data:avioneta_game_context_data(ArenaComponentData),
-    Data
+    [{color, Color}, {id, Id}, {x, X}, {y, Y} | Data]
   ),
+
   monitor_player_componet(Player),
   Players               = avioneta_arena_component_data:players(ArenaComponentData),
   NewArenaComponentData = avioneta_arena_component_data:update(ArenaComponentData, [{players, [Player | Players]}]),
@@ -48,11 +58,28 @@ handle_call({get_player, Data}, _, ArenaComponentData) ->
   {reply, Player, ArenaComponentData};
 
 handle_call(players, _, ArenaComponentData) ->
-  {reply, avioneta_arena_component_data:players(ArenaComponentData), ArenaComponentData}.
+  {reply, avioneta_arena_component_data:players(ArenaComponentData), ArenaComponentData};
+
+handle_call(positions_left, _, ArenaComponentData) ->
+  {reply, ?MAX_POSITIONS - number_of_players(ArenaComponentData), ArenaComponentData}.
 
 monitor_player_componet(Player) ->
-  monitor(process, Player).
+  erlang:monitor(process, Player).
 
-avioneta_event_bus(ArenaComponentData) ->
-  AvionetaGameContextData = avioneta_arena_component_data:avioneta_game_context_data(ArenaComponentData),
-  avioneta_game_context_data:avioneta_event_bus(AvionetaGameContextData).
+number_of_players(ArenaComponentData) ->
+  erlang:length(avioneta_arena_component_data:players(ArenaComponentData)).
+
+pick_player_color(ArenaComponentData) ->
+  Players       = avioneta_arena_component_data:players(ArenaComponentData),
+  PlayersColors = [ avioneta_player_component:color(Player) || Player <- Players],
+  [Color | _]   = available_colors(?COLORS, PlayersColors),
+  Color.
+
+available_colors(AllColors, UsedColors) ->
+  lists:filter(fun(X) -> not lists:member(X, UsedColors) end, AllColors).
+
+pick_player_id(_) ->
+  fserlangutils_time:microseconds_since_epoch().
+
+pick_player_coordinates(_) ->
+  {x, 0, y, 0}.

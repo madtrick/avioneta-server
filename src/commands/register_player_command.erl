@@ -2,19 +2,30 @@
 
 -export([fromJSON/1, run/2]).
 
-% {player : { id : , x : , y }}
+% {player : {}}
 fromJSON(JSON) ->
-  {[{_Player, {[{<<"id">>, Id}, {<<"x">>, X}, {<<"y">>, Y}]}}]} = JSON,
-  avioneta_register_player_command_data:new(?MODULE, [{id, Id}, {x, X}, {y, Y}]).
+  {[]} = JSON,
+  avioneta_register_player_command_data:new(?MODULE, []).
 
-run(CommandData, ContextData) ->
+run(_CommandData, ContextData) ->
   lager:debug("Running register_player_command"),
-  Player = avioneta_arena_component:add_player(
-    avioneta_game:arena_component(avioneta_command_context_data:avioneta_game(ContextData)),
-    [
-      {id, avioneta_register_player_command_data:id(CommandData)},
-      {x, avioneta_register_player_command_data:x(CommandData)},
-      {y, avioneta_register_player_command_data:y(CommandData)},
-      {origin, avioneta_command_context_data:origin(ContextData)}
-    ]
-  ).
+  ArenaComponent = arena_component(ContextData),
+  register_player_if(can_register_player(ArenaComponent), ArenaComponent, [{origin, origin(ContextData)}]).
+
+register_player_if(true, ArenaComponent, Data) ->
+  {registered, avioneta_arena_component:create_player(ArenaComponent, Data)};
+register_player_if(false, _, _) ->
+  {not_registered, "Arena full"}.
+
+
+can_register_player(ArenaComponent) ->
+  avioneta_arena_component:positions_left(ArenaComponent) > 0.
+
+arena_component(ContextData) ->
+  avioneta_game:arena_component(avioneta_game(ContextData)).
+
+avioneta_game(ContextData) ->
+  avioneta_command_context_data:avioneta_game(ContextData).
+
+origin(ContextData) ->
+  avioneta_command_context_data:origin(ContextData).

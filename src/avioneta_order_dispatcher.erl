@@ -22,10 +22,14 @@ dispatch_with_rule(_, _, _, _) ->
   lager:debug("Unknown dispatch rule").
 
 convert_to_json(Orders) ->
-  lists:foldl(fun(OrderData, Acc) ->
-        [ (avioneta_order_data:order(OrderData)):toJSON(
-          avioneta_order_data:order_data(OrderData)
-        ) | Acc]
-    end, [], Orders).
+  JSONOrders = lists:foldl(fun(OrderData, Acc) ->
+      [ (avioneta_order_data:order(OrderData)):toJSON(
+        avioneta_order_data:order_data(OrderData)
+      ) | Acc]
+  end, [], Orders),
 
+  ["[" ++ join(JSONOrders, ",") ++ "]"].
 
+join([], _) -> [];
+join([List|Lists], Separator) ->
+     lists:flatten([List | [[Separator,Next] || Next <- Lists]]).
