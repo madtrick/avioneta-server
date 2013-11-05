@@ -12,7 +12,8 @@ call(CommandContextData, AvionetaGame, OriginChannel) ->
   ArenaComponent = avioneta_game:arena_component(AvionetaGame),
   %Orders = [avioneta_register_player_order:new(Player) || Player <- avioneta_arena_component:players(ArenaComponent), Player =/= NewPlayer],
 
-  RegisterNewPlayerOrder = avioneta_register_player_order:new(NewPlayer, false),
-  RegisterPlayersOrder = [avioneta_register_player_order:new(Player, true) || Player <- avioneta_arena_component:players(ArenaComponent), Player =/= NewPlayer],
+  RegisterNewLocalPlayerOrder = avioneta_register_player_order:new(NewPlayer, [{remote, false}]),
+  RegisterNewRemotePlayerOrder = avioneta_register_player_order:new(NewPlayer, [{remote, true}]),
+  RegisterPlayersOrder = [avioneta_register_player_order:new(Player, [{remote, true}]) || Player <- avioneta_arena_component:players(ArenaComponent), Player =/= NewPlayer],
 
-  [{send_to_origin, [RegisterNewPlayerOrder | RegisterPlayersOrder]}, {send_to_others, [RegisterNewPlayerOrder]}].
+  [{send_to_origin, [RegisterNewLocalPlayerOrder | RegisterPlayersOrder]}, {send_to_others, [RegisterNewRemotePlayerOrder]}].
