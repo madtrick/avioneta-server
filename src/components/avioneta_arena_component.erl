@@ -9,8 +9,8 @@
 -define(MAX_POSITIONS, 3).
 -define(COLORS, [<<"red">>, <<"blue">>, <<"green">>]).
 
-start_link(AvionetaGameContextData) ->
-  gen_server:start_link(?MODULE, [AvionetaGameContextData], []).
+start_link(Data) ->
+  gen_server:start_link(?MODULE, [Data], []).
 
 positions_left(ArenaComponent) ->
   gen_server:call(ArenaComponent, positions_left).
@@ -24,9 +24,14 @@ get_player(ArenaComponent, Data) ->
 players(ArenaComponent) ->
   gen_server:call(ArenaComponent, players).
 
-init([AvionetaGameContextData]) ->
+init([Data]) ->
   {ok, AvionetaPlayerComponentSup} = avioneta_player_component_sup:start_link(),
-  {ok, avioneta_arena_component_data:new([{avioneta_game_context_data, AvionetaGameContextData}, {avioneta_player_component_sup, AvionetaPlayerComponentSup}])}.
+  {ok, avioneta_arena_component_data:new([
+        {avioneta_player_component_sup, AvionetaPlayerComponentSup},
+        {avioneta_game_context_data, proplists:get_value(avioneta_game_context_data, Data)},
+        {width, proplists:get_value(width, Data)},
+        {height, proplists:get_value(height, Data)}
+      ])}.
 
 handle_info(?PLAYER_DOWN(Pid), ArenaComponentData) ->
   lager:debug("Player is down"),
@@ -81,5 +86,18 @@ available_colors(AllColors, UsedColors) ->
 pick_player_id(_) ->
   fserlangutils_time:microseconds_since_epoch().
 
-pick_player_coordinates(_) ->
-  {x, 0, y, 0}.
+pick_player_coordinates(ArenaComponentData) ->
+  %NOTE: for now I'm harcoding here the width and height of the player
+  % width : 100
+  % height: 5
+  X = pick_player_x_coordinate(avioneta_arena_component_data:width(ArenaComponentData) - 100),
+  Y = pick_player_y_coordinate(avioneta_arena_component_data:height(ArenaComponentData) - 5),
+
+  {x, X, y, Y}.
+
+pick_player_x_coordinate(MaxX) ->
+  lager:debug("MAXx ~w", [MaxX]),
+  random:uniform(MaxX).
+
+pick_player_y_coordinate(MaxY) ->
+  random:uniform(MaxY).

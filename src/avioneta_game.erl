@@ -12,9 +12,9 @@ arena_component(AvionetaGame) ->
 
 init(_) ->
   lager:debug("Arena pid ~w", [self()]),
-  {ok, EventBus} = avioneta_event_bus:start_link(),
+  {ok, EventBus}          = avioneta_event_bus:start_link(),
   AvionetaGameContextData = avioneta_game_context_data:new([{avioneta_event_bus, EventBus}]),
-  {ok, ArenaComponent} = avioneta_arena_component:start_link(AvionetaGameContextData),
+  {ok, ArenaComponent}    = avioneta_arena_component:start_link([{avioneta_game_context_data, AvionetaGameContextData}, {width, arena_width()}, {height, arena_height()}]),
   {ok, avioneta_game_state_data:new([{avioneta_arena_component, ArenaComponent}, {avioneta_game_context_data, AvionetaGameContextData}]), 0}.
 
 handle_info(timeout, AvionetaGameStateData) ->
@@ -32,3 +32,9 @@ handle_call(arena_component, _, AvionetaGameStateData) ->
 avioneta_event_bus(AvionetaGameStateData) ->
   AvionetaGameContextData = avioneta_game_state_data:avioneta_game_context_data(AvionetaGameStateData),
   avioneta_game_context_data:avioneta_event_bus(AvionetaGameContextData).
+
+arena_width() ->
+  avioneta_config:get(arena.width).
+
+arena_height() ->
+  avioneta_config:get(arena.height).
