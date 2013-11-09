@@ -12,6 +12,6 @@ new(Order, Data) ->
     avioneta_player_component = proplists:get_value(avioneta_player_component, Data)
   },
 
-  avioneta_order_data:new(Order, OrderData).
+  avioneta_message_data:new(Order, OrderData).
 
 avioneta_player_component(#avioneta_move_player_order_data{ avioneta_player_component = AvionetPlayerComponent }) -> AvionetPlayerComponent.

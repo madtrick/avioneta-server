@@ -12,6 +12,6 @@ new(Order, Data) ->
     player_id = proplists:get_value(player_id, Data)
   },
 
-  avioneta_order_data:new(Order, OrderData).
+  avioneta_message_data:new(Order, OrderData).
 
 player_id(#avioneta_destroy_player_order_data{ player_id = PlayerId }) -> PlayerId.

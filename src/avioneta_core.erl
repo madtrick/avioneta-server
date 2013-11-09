@@ -25,9 +25,9 @@ handle_cast({process_message, OriginChannel, Message}, State) ->
 
 handle_process_message(OriginChannel, {text, Message}, State) ->
   CommandContexts = avioneta_command_parser:parse(Message),
-  Orders =  avioneta_command_runner:run(CommandContexts, avioneta_game(State), OriginChannel),
+  Messages =  avioneta_command_runner:run(CommandContexts, avioneta_game(State), OriginChannel),
   Channels = filter_origin_channel(OriginChannel, avioneta_registry:entries()),
-  avioneta_order_dispatcher:dispatch(Orders, OriginChannel, Channels ),
+  avioneta_message_dispatcher:dispatch(Messages, OriginChannel, Channels ),
   State.
 filter_origin_channel(OriginChannel, Channels) ->
   lists:filter(fun(Element) -> Element =/= OriginChannel end, Channels).

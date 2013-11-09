@@ -12,6 +12,6 @@ new(Order, Data) ->
     shot = proplists:get_value(shot, Data)
   },
 
-  avioneta_order_data:new(Order, OrderData).
+  avioneta_message_data:new(Order, OrderData).
 
 shot(#avioneta_shoot_player_order_data{ shot = Shot }) -> Shot.
