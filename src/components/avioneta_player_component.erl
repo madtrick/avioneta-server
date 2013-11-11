@@ -3,7 +3,7 @@
 
 -export([start_link/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
--export([id/1, x/1, y/1, move/2, destroy/1, color/1]).
+-export([id/1, x/1, y/1, move/2, destroy/1, color/1, name/1]).
 
 -define(PROCESS_DOWN(Pid), {'DOWN', _MonitorRef, process, Pid, _}).
 
@@ -21,6 +21,9 @@ y(PlayerComponent) ->
 
 color(PlayerComponent) ->
   gen_server:call(PlayerComponent, color).
+
+name(PlayerComponent) ->
+  gen_server:call(PlayerComponent, name).
 
 move(PlayerComponent, Data) ->
   gen_server:cast(PlayerComponent, {move, Data}).
@@ -51,7 +54,9 @@ handle_call(x, _, PlayerComponentData) ->
 handle_call(y, _, PlayerComponentData) ->
   {reply, avioneta_player_component_data:y(PlayerComponentData), PlayerComponentData};
 handle_call(color, _, PlayerComponentData) ->
-  {reply, avioneta_player_component_data:color(PlayerComponentData), PlayerComponentData}.
+  {reply, avioneta_player_component_data:color(PlayerComponentData), PlayerComponentData};
+handle_call(name, _, PlayerComponentData) ->
+  {reply, avioneta_player_component_data:name(PlayerComponentData), PlayerComponentData}.
 
 terminate(_Repos, _PlayerComponentData) ->
   die.

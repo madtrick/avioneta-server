@@ -42,14 +42,15 @@ handle_info(?PLAYER_DOWN(Pid), ArenaComponentData) ->
   {noreply, NewArenaComponentData}.
 
 handle_call({create_player, Data}, _, ArenaComponentData) ->
-  Color       = pick_player_color(ArenaComponentData),
-  Id          = pick_player_id(ArenaComponentData),
+  Color        = pick_player_color(ArenaComponentData),
+  Id           = pick_player_id(ArenaComponentData),
   {x, X, y, Y} = pick_player_coordinates(ArenaComponentData),
+  Name         = pick_player_name(ArenaComponentData),
 
   {ok, Player}                = avioneta_player_component_sup:add_player(
     avioneta_arena_component_data:avioneta_player_component_sup(ArenaComponentData),
     avioneta_arena_component_data:avioneta_game_context_data(ArenaComponentData),
-    [{color, Color}, {id, Id}, {x, X}, {y, Y} | Data]
+    [{color, Color}, {id, Id}, {x, X}, {y, Y}, {name, Name} | Data]
   ),
 
   monitor_player_componet(Player),
@@ -66,7 +67,10 @@ handle_call(players, _, ArenaComponentData) ->
   {reply, avioneta_arena_component_data:players(ArenaComponentData), ArenaComponentData};
 
 handle_call(positions_left, _, ArenaComponentData) ->
-  {reply, ?MAX_POSITIONS - number_of_players(ArenaComponentData), ArenaComponentData}.
+  {reply, real_positions_left(ArenaComponentData), ArenaComponentData}.
+
+real_positions_left(ArenaComponentData) ->
+  ?MAX_POSITIONS - number_of_players(ArenaComponentData).
 
 monitor_player_componet(Player) ->
   erlang:monitor(process, Player).
@@ -101,3 +105,7 @@ pick_player_x_coordinate(MaxX) ->
 
 pick_player_y_coordinate(MaxY) ->
   random:uniform(MaxY).
+
+pick_player_name(ArenaComponentData) ->
+  % NOTE: find a better way to encode this as a binary
+  erlang:list_to_binary(["Player-", erlang:integer_to_list(?MAX_POSITIONS - real_positions_left(ArenaComponentData) + 1)]).
