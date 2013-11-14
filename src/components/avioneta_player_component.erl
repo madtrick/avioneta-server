@@ -3,7 +3,7 @@
 
 -export([start_link/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
--export([id/1, x/1, y/1, move/2, destroy/1, color/1, name/1]).
+-export([id/1, x/1, y/1, move/2, destroy/1, color/1, name/1, hit/1]).
 
 -define(PROCESS_DOWN(Pid), {'DOWN', _MonitorRef, process, Pid, _}).
 
@@ -18,6 +18,9 @@ x(PlayerComponent) ->
 
 y(PlayerComponent) ->
   gen_server:call(PlayerComponent, y).
+
+hit(PlayerComponent) ->
+  gen_server:cast(PlayerComponent, hit).
 
 color(PlayerComponent) ->
   gen_server:call(PlayerComponent, color).
@@ -43,6 +46,8 @@ handle_info(?PROCESS_DOWN(Pid), PlayerComponentData) ->
 
 handle_cast(destroy, PlayerComponentData) ->
   {stop, destroyed, PlayerComponentData};
+handle_cast(hit, PlayerComponentData) ->
+  {noreply, hit2(PlayerComponentData)};
 handle_cast({move, Data}, PlayerComponentData) ->
   [{axis, Axis}, {value, Value}] = Data,
   {noreply, move(Axis, Value, PlayerComponentData)}.
@@ -72,6 +77,15 @@ move(<<"y">>, Value, PlayerComponentData) ->
     PlayerComponentData,
     [{y, Value}]
   ).
+
+hit2(PlayerComponentData) ->
+  avioneta_player_component_data:update(
+    PlayerComponentData,
+    [{life, player_component_data_life(PlayerComponentData) - 10}]
+  ).
+
+player_component_data_life(PlayerComponentData) ->
+  avioneta_player_component_data:life(PlayerComponentData).
 
 monitor_origin(PlayerComponentData) ->
   erlang:monitor(process, avioneta_player_component_data:origin(PlayerComponentData)).
