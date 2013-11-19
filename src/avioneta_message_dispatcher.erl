@@ -18,6 +18,8 @@ dispatch_with_rule(send_to_origin, Data, OriginChannel, _OtherChannels) ->
   avioneta_multicast:publish(Data, OriginChannel);
 dispatch_with_rule(send_to_others, Data, _OriginChannel, OtherChannels) ->
   avioneta_multicast:publish(Data, OtherChannels);
+dispatch_with_rule(send_to_all, Data, OriginChannel, OtherChannels) ->
+  avioneta_multicast:publish(Data, [OriginChannel | OtherChannels]);
 dispatch_with_rule(_, _, _, _) ->
   lager:debug("Unknown dispatch rule").
 
