@@ -12,6 +12,7 @@ toJSON(RegisterPlayerOrderData) ->
                 {y, avioneta_player_component:y(PlayerComponent)},
                 {color, avioneta_player_component:color(PlayerComponent)},
                 {name, avioneta_player_component:name(PlayerComponent)},
+                {life, avioneta_player_component:life(PlayerComponent)},
                 {remote, avioneta_register_player_order_data:remote(RegisterPlayerOrderData)}
               ]}
           }

@@ -3,7 +3,7 @@
 
 -export([start_link/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
--export([id/1, x/1, y/1, move/2, destroy/1, color/1, name/1, hit/1]).
+-export([id/1, x/1, y/1, move/2, destroy/1, color/1, name/1, hit/1, life/1]).
 
 -define(PROCESS_DOWN(Pid), {'DOWN', _MonitorRef, process, Pid, _}).
 
@@ -34,6 +34,9 @@ move(PlayerComponent, Data) ->
 destroy(PlayerComponent) ->
   gen_server:cast(PlayerComponent, destroy).
 
+life(PlayerComponent) ->
+  gen_server:call(PlayerComponent, life).
+
 init([AvionetaGameContextData, PlayerData]) ->
   PlayerComponentData = avioneta_player_component_data:new(
     [{avioneta_game_context_data, AvionetaGameContextData} | PlayerData]
@@ -60,6 +63,8 @@ handle_call(y, _, PlayerComponentData) ->
   {reply, avioneta_player_component_data:y(PlayerComponentData), PlayerComponentData};
 handle_call(color, _, PlayerComponentData) ->
   {reply, avioneta_player_component_data:color(PlayerComponentData), PlayerComponentData};
+handle_call(life, _, PlayerComponentData) ->
+  {reply, player_component_data_life(PlayerComponentData), PlayerComponentData};
 handle_call(name, _, PlayerComponentData) ->
   {reply, avioneta_player_component_data:name(PlayerComponentData), PlayerComponentData}.
 
