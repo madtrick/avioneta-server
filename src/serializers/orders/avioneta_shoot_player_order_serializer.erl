@@ -9,7 +9,8 @@ toJSON(ShootPlayerOrderData) ->
       {data, {[
             {id, avioneta_shot_data:id(Shot)},
             {x, avioneta_shot_data:x(Shot)},
-            {y, avioneta_shot_data:y(Shot)}
+            {y, avioneta_shot_data:y(Shot)},
+            {shot_id, avioneta_shot_data:shot_id(Shot)}
           ]}}
     ]},
   jiffy:encode(Struct).

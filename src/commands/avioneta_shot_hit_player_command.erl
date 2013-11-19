@@ -4,8 +4,8 @@
 
 % {player : {}}
 fromJSON(JSON) ->
-  {[{<<"player">>, PlayerId}]} = JSON,
-  avioneta_shot_hit_player_command_data:new(?MODULE, [{id, PlayerId}]).
+  {[{<<"player">>, PlayerId}, {<<"shot">>, ShotId}]} = JSON,
+  avioneta_shot_hit_player_command_data:new(?MODULE, [{player_id, PlayerId}, {shot_id, ShotId}]).
 
 run(CommandData, ContextData) ->
   lager:debug("Running shot hit player command"),
@@ -19,4 +19,4 @@ arena_component(ContextData) ->
   ).
 
 player_id(CommandData) ->
-  avioneta_shot_hit_player_command_data:id(CommandData).
+  avioneta_shot_hit_player_command_data:player_id(CommandData).

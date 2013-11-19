@@ -2,8 +2,8 @@
 
 -export([new/1, toJSON/1]).
 
-new(Shot) ->
-  avioneta_shoot_player_order_data:new(?MODULE, [{shot, Shot}]).
+new(Data) ->
+  avioneta_shoot_player_order_data:new(?MODULE, Data).
 
 toJSON(OrderData) ->
   avioneta_shoot_player_order_serializer:toJSON(OrderData).

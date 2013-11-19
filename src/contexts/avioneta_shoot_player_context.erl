@@ -10,7 +10,7 @@ call(CommandContextData, AvionetaGame, OriginChannel) ->
     avioneta_command_data:runner_data(CommandData), UpdatedCommandContextData
   ),
 
-  ShootPlayerOrder = avioneta_shoot_player_order:new(Shot),
+  ShootPlayerOrder = avioneta_shoot_player_order:new([{shot, Shot}]),
 
-  [{send_to_others, [ShootPlayerOrder]}].
+  [{send_to_all, [ShootPlayerOrder]}].
 
