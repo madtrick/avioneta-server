@@ -11,9 +11,9 @@
 
 new(Runner, Data) ->
   CommandData = #avioneta_shoot_player_command_data{
-    id = proplists:get_value(id, Data),
-    x = proplists:get_value(x, Data),
-    y = proplists:get_value(y, Data)
+    id       = proplists:get_value(id, Data),
+    x        = proplists:get_value(x, Data),
+    y        = proplists:get_value(y, Data)
   },
 
   avioneta_command_data:new(Runner, CommandData).
