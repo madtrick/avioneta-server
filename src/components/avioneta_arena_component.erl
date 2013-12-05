@@ -91,16 +91,15 @@ pick_player_id(_) ->
   fserlangutils_time:microseconds_since_epoch().
 
 pick_player_coordinates(ArenaComponentData) ->
-  %NOTE: for now I'm harcoding here the width and height of the player
-  % width : 100
-  % height: 5
-  X = pick_player_x_coordinate(avioneta_arena_component_data:width(ArenaComponentData) - 100),
-  Y = pick_player_y_coordinate(avioneta_arena_component_data:height(ArenaComponentData) - 5),
+  %NOTE: for now I'm harcoding here the radius of the player
+  % radius : 16
+
+  X = pick_player_x_coordinate(avioneta_arena_component_data:width(ArenaComponentData) - 16),
+  Y = pick_player_y_coordinate(avioneta_arena_component_data:height(ArenaComponentData) - 16),
 
   {x, X, y, Y}.
 
 pick_player_x_coordinate(MaxX) ->
-  lager:debug("MAXx ~w", [MaxX]),
   random:uniform(MaxX).
 
 pick_player_y_coordinate(MaxY) ->
