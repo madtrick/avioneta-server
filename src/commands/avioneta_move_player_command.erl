@@ -2,15 +2,15 @@
 
 -export([fromJSON/1, run/2]).
 
-% {player : , axis : , value : }
+% {player : , direction: }
 fromJSON(JSON) ->
-  {[{<<"player">>, Id}, {<<"axis">>, Axis}, {<<"value">>, Value}]} = JSON,
-  avioneta_move_player_command_data:new(?MODULE, [{id, Id}, {axis, Axis}, {value, Value}]).
+  {[{<<"player">>, Id}, {<<"direction">>, Direction}]} = JSON,
+  avioneta_move_player_command_data:new(?MODULE, [{id, Id}, {direction, Direction}]).
 
 run(CommandData, ContextData) ->
   lager:debug("Running move_player_command"),
   Player = avioneta_arena_component:get_player(arena_component(ContextData), player_id(CommandData)),
-  avioneta_player_component:move(Player, [{axis, axis(CommandData)}, {value, value(CommandData)}]),
+  avioneta_player_component:move(Player, [{direction, direction(CommandData)}]),
   Player.
 
 arena_component(ContextData) ->
@@ -21,8 +21,5 @@ arena_component(ContextData) ->
 player_id(CommandData) ->
   avioneta_move_player_command_data:id(CommandData).
 
-axis(CommandData) ->
-  avioneta_move_player_command_data:axis(CommandData).
-
-value(CommandData) ->
-  avioneta_move_player_command_data:value(CommandData).
+direction(CommandData) ->
+  avioneta_move_player_command_data:direction(CommandData).

@@ -8,8 +8,7 @@ toJSON(MovePlayerOrderData) ->
       {type, <<"MovePlayerOrder">>},
       {data, {[
             {id, avioneta_player_component:id(PlayerComponent)},
-            {x, avioneta_player_component:x(PlayerComponent)},
-            {y, avioneta_player_component:y(PlayerComponent)}
+            {direction, avioneta_move_player_order_data:direction(MovePlayerOrderData)}
           ]}
       }
     ]},
