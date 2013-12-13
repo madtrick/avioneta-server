@@ -106,5 +106,4 @@ pick_player_y_coordinate(MaxY) ->
   random:uniform(MaxY).
 
 pick_player_name(ArenaComponentData) ->
-  % NOTE: find a better way to encode this as a binary
-  erlang:list_to_binary(["Player-", erlang:integer_to_list(?MAX_POSITIONS - real_positions_left(ArenaComponentData) + 1)]).
+  <<"Player">>.
