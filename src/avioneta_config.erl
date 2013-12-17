@@ -14,6 +14,6 @@ get(Key) ->
 
 get(Key, Default) ->
   case avioneta_config:get(Key) of
-    undefined -> Default;
+    [] -> Default;
     Value -> Value
   end.
