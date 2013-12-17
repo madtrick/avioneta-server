@@ -1,1 +1,1 @@
-websockets: erl -config app -pa ebin deps/*/ebin -s avioneta
+websockets: AVIONETA_ENV=production erl -config app -pa ebin deps/*/ebin -s avioneta
