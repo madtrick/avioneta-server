@@ -6,10 +6,15 @@
 
 
 config() ->
-  [{port, port()}, {worker_options, worker_options()}].
+  [{port, port()}, {number_of_workers, 2}, {worker_options, [{protocol_modules_options, protocol_modules_options()}]}].
 
 port() ->
   avioneta_config:get(port, fserlangutils_string:to_integer(os:getenv(?PORT_ENV_VARIABLE))).
 
-worker_options() ->
-  [{handler, avioneta_handler}].
+protocol_modules_options() ->
+  [
+    {wsserver_websocket_protocol,[
+        {handler_module, avioneta_handler}
+      ]
+    }
+  ].

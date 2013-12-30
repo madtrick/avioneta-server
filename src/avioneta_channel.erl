@@ -5,7 +5,7 @@
 -export([init/1, handle_cast/2, terminate/2]).
 
 -record(avioneta_channel_state, {
-    wsworker
+    wsserver_worker
   }).
 
 create(WSWorker) ->
@@ -16,10 +16,10 @@ send(Channel, Data) ->
 
 init(WSWorker) ->
   avioneta_registry:register(self()),
-  {ok, #avioneta_channel_state{ wsworker = WSWorker }}.
+  {ok, #avioneta_channel_state{ wsserver_worker = WSWorker }}.
 
 handle_cast({send, Data}, State) ->
-  wsworker:send(State#avioneta_channel_state.wsworker, Data),
+  wsserver_worker:send(State#avioneta_channel_state.wsserver_worker, Data),
   {noreply, State}.
 
 terminate(_Reason, _State) ->
