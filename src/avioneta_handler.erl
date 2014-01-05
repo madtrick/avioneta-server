@@ -8,7 +8,9 @@ init(Options) ->
   {ok, Channel} = avioneta_channel:create(Worker),
   #avioneta_state{avioneta_channel = Channel}.
 
-handle(Message, State) ->
+handle({pong, _}, State) ->
+  {noreply, State};
+handle(Message = {text, _}, State) ->
   io:format("Message received"),
   avioneta_core:process_message(Message, State#avioneta_state.avioneta_channel),
   {noreply,  State}.
