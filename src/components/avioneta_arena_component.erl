@@ -6,7 +6,6 @@
 -export([init/1, handle_call/3, handle_info/2]).
 
 -define(PLAYER_DOWN(Pid), {'DOWN', _, process, Pid, _}).
--define(MAX_POSITIONS, 2).
 -define(COLORS, [<<"red">>, <<"blue">>, <<"green">>]).
 
 start_link(Data) ->
@@ -29,6 +28,7 @@ init([Data]) ->
   {ok, avioneta_arena_component_data:new([
         {avioneta_player_component_sup, AvionetaPlayerComponentSup},
         {avioneta_game_context_data, proplists:get_value(avioneta_game_context_data, Data)},
+        {max_number_of_players, avioneta_config:get(arena.players.max)},
         {width, proplists:get_value(width, Data)},
         {height, proplists:get_value(height, Data)}
       ])}.
@@ -70,7 +70,7 @@ handle_call(positions_left, _, ArenaComponentData) ->
   {reply, real_positions_left(ArenaComponentData), ArenaComponentData}.
 
 real_positions_left(ArenaComponentData) ->
-  ?MAX_POSITIONS - number_of_players(ArenaComponentData).
+  avioneta_arena_component_data:max_number_of_players(ArenaComponentData) - number_of_players(ArenaComponentData).
 
 monitor_player_componet(Player) ->
   erlang:monitor(process, Player).
@@ -105,5 +105,5 @@ pick_player_x_coordinate(MaxX) ->
 pick_player_y_coordinate(MaxY) ->
   random:uniform(MaxY).
 
-pick_player_name(ArenaComponentData) ->
+pick_player_name(_ArenaComponentData) ->
   <<"Player">>.
