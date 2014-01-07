@@ -6,7 +6,7 @@
 
 
 config() ->
-  [{port, port()}, {number_of_workers, 2}, {worker_options, [{protocol_modules_options, protocol_modules_options()}]}].
+  [{port, port()}, {number_of_workers, 3}, {worker_options, [{protocol_modules_options, protocol_modules_options()}]}].
 
 port() ->
   avioneta_config:get(port, fserlangutils_string:to_integer(os:getenv(?PORT_ENV_VARIABLE))).

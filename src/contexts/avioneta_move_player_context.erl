@@ -12,5 +12,5 @@ call(CommandContextData, AvionetaGame, OriginChannel) ->
 
   MovePlayerOrder = avioneta_move_player_order:new(Player, [{direction, avioneta_move_player_command_data:direction(avioneta_command_data:runner_data(CommandData))}]),
 
-  [{send_to_others, [MovePlayerOrder]}].
+  {reply, [{send_to_others, [MovePlayerOrder]}]}.
 

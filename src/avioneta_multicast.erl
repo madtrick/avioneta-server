@@ -2,20 +2,20 @@
 -behaviour(gen_server).
 
 -export([start_link/0, publish/2]).
--export([init/1, handle_cast/2, terminate/2]).
+-export([init/1, handle_call/3, terminate/2]).
 
 start_link() ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 publish(Data, Channels) ->
-  gen_server:cast(?MODULE, {publish, Data, Channels}).
+  gen_server:call(?MODULE, {publish, Data, Channels}).
 
 init(_) ->
   {ok, undefined}.
 
-handle_cast({publish, Data, Channels}, State) ->
+handle_call({publish, Data, Channels}, _, State) ->
   publish_data(Data, Channels),
-  {noreply, State}.
+  {reply, ok, State}.
 
 publish_data(Data, To) when is_pid(To) ->
   publish_data_to_channel(Data, To);

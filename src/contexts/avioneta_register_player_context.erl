@@ -18,6 +18,6 @@ eval_result_from_command({registered, NewPlayer}, AvionetaGame) ->
   RegisterNewRemotePlayerOrder = avioneta_register_player_order:new(NewPlayer, [{remote, true}]),
   RegisterPlayersOrder = [avioneta_register_player_order:new(Player, [{remote, true}]) || Player <- avioneta_arena_component:players(ArenaComponent), Player =/= NewPlayer],
 
-  [{send_to_origin, [RegisterNewLocalPlayerOrder | RegisterPlayersOrder]}, {send_to_others, [RegisterNewRemotePlayerOrder]}];
+  {reply, [{send_to_origin, [RegisterNewLocalPlayerOrder | RegisterPlayersOrder]}, {send_to_others, [RegisterNewRemotePlayerOrder]}]};
 eval_result_from_command({not_registered, _Reason}, _AvionetaGame) ->
-  [{send_to_origin, [avioneta_no_seats_left_notification:new()]}].
+  {close, [{send_to_origin, [avioneta_no_seats_left_notification:new()]}]}.

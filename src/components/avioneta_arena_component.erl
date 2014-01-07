@@ -6,7 +6,7 @@
 -export([init/1, handle_call/3, handle_info/2]).
 
 -define(PLAYER_DOWN(Pid), {'DOWN', _, process, Pid, _}).
--define(MAX_POSITIONS, 3).
+-define(MAX_POSITIONS, 2).
 -define(COLORS, [<<"red">>, <<"blue">>, <<"green">>]).
 
 start_link(Data) ->

@@ -12,5 +12,5 @@ call(CommandContextData, AvionetaGame, OriginChannel) ->
 
   RotatePlayerOrder = avioneta_rotate_player_order:new(Player),
 
-  [{send_to_others, [RotatePlayerOrder]}].
+  {reply, [{send_to_others, [RotatePlayerOrder]}]}.
 
