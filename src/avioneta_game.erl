@@ -11,7 +11,6 @@ arena_component(AvionetaGame) ->
   gen_server:call(AvionetaGame, arena_component).
 
 init(_) ->
-  lager:debug("Arena pid ~w", [self()]),
   {ok, EventBus}          = avioneta_event_bus:start_link(),
   AvionetaGameContextData = avioneta_game_context_data:new([{avioneta_event_bus, EventBus}]),
   {ok, ArenaComponent}    = avioneta_arena_component:start_link([{avioneta_game_context_data, AvionetaGameContextData}, {width, arena_width()}, {height, arena_height()}]),

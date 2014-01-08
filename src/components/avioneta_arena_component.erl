@@ -34,9 +34,6 @@ init([Data]) ->
       ])}.
 
 handle_info(?PLAYER_DOWN(Pid), ArenaComponentData) ->
-  lager:debug("Player is down"),
-
-
   NewPlayers = [Player || Player <- avioneta_arena_component_data:players(ArenaComponentData), Player =/= Pid ],
   NewArenaComponentData = avioneta_arena_component_data:update(ArenaComponentData, [{players, NewPlayers}]),
   {noreply, NewArenaComponentData}.

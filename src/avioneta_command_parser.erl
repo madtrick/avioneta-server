@@ -10,7 +10,6 @@ parse([]) ->
   [];
 parse(Data) ->
   JSON = jiffy:decode(Data),
-  lager:debug("Data ~s", [Data]),
   extract_commands_from_json(JSON).
 
 
