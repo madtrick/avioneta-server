@@ -10,4 +10,4 @@ call(CommandContextData, AvionetaGame, OriginChannel) ->
     avioneta_command_data:runner_data(CommandData), UpdatedCommandContextData
   ),
 
-  destroy.
+  noreply.
