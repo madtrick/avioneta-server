@@ -33,7 +33,7 @@ avioneta_event_bus(AvionetaGameStateData) ->
   avioneta_game_context_data:avioneta_event_bus(AvionetaGameContextData).
 
 arena_width() ->
-  avioneta_config:get(arena.width).
+  avioneta_config:get('arena.width').
 
 arena_height() ->
-  avioneta_config:get(arena.height).
+  avioneta_config:get('arena.height').
