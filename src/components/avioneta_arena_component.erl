@@ -89,10 +89,14 @@ pick_player_id(_) ->
 
 pick_player_coordinates(ArenaComponentData) ->
   %NOTE: for now I'm harcoding here the radius of the player
+  % Substract the double of the radious and the add the radious
+  % after pick_player_?_coordinate. This is because pick_player_?_coordinate
+  % could return a value < radious.
+  %
   % radius : 16
 
-  X = pick_player_x_coordinate(avioneta_arena_component_data:width(ArenaComponentData) - 16),
-  Y = pick_player_y_coordinate(avioneta_arena_component_data:height(ArenaComponentData) - 16),
+  X = pick_player_x_coordinate(avioneta_arena_component_data:width(ArenaComponentData) - 32) + 16,
+  Y = pick_player_y_coordinate(avioneta_arena_component_data:height(ArenaComponentData) - 32) + 16,
 
   {x, X, y, Y}.
 
